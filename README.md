@@ -74,8 +74,16 @@ the same profit %, since profit is start-amount independent.
 index.html    markup
 styles.css    dark fantasy / POE-style theme
 app.js        conversion, route scanning, validation, persistence, rendering
-sprites/      stylized SVG orb icons (swap for real sprites anytime)
+sprites/      local stylized SVG orb icons (fallback)
 ```
+
+## Orb icons
+
+Icons hot-link the official Path of Exile art from `web.poecdn.com`, loaded
+directly by the visitor's browser. If a CDN image fails to load, the app
+falls back automatically to the local stylized SVGs in `sprites/`. To pin
+exact PoE2 art, drop your own PNGs in `sprites/` and point `CURRENCIES[...]`
+in `app.js` (and the input `<img>` tags) at them.
 
 ## Disclaimer
 

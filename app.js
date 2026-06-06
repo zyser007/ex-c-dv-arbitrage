@@ -11,10 +11,27 @@ const DEFAULTS = {
   minimumProfitPercent: 2,
 };
 
+// `icon` hot-links the official PoE CDN art (loaded by the visitor's browser);
+// `fallback` is the local stylized SVG used if the CDN image fails to load.
 const CURRENCIES = {
-  exalted: { name: "Exalted Orb", short: "Exalted", icon: "sprites/exalted-orb.svg" },
-  chaos: { name: "Chaos Orb", short: "Chaos", icon: "sprites/chaos-orb.svg" },
-  divine: { name: "Divine Orb", short: "Divine", icon: "sprites/divine-orb.svg" },
+  exalted: {
+    name: "Exalted Orb",
+    short: "Exalted",
+    icon: "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyAddModToRare.png",
+    fallback: "sprites/exalted-orb.svg",
+  },
+  chaos: {
+    name: "Chaos Orb",
+    short: "Chaos",
+    icon: "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png",
+    fallback: "sprites/chaos-orb.svg",
+  },
+  divine: {
+    name: "Divine Orb",
+    short: "Divine",
+    icon: "https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyModValues.png",
+    fallback: "sprites/divine-orb.svg",
+  },
 };
 
 // All 6 triangular permutations (each loops back to its start).
@@ -197,7 +214,9 @@ function statusClass(status) {
 
 function icon(currency) {
   const meta = CURRENCIES[currency];
-  return `<img class="orb-icon sm" src="${meta.icon}" alt="" onerror="this.style.display='none'">`;
+  // Fall back to the local SVG once if the CDN image fails.
+  return `<img class="orb-icon sm" src="${meta.icon}" alt=""
+    onerror="this.onerror=null;this.src='${meta.fallback}'">`;
 }
 
 function routePathHtml(route) {

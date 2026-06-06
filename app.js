@@ -2,9 +2,9 @@
 
 const DEFAULTS = {
   startExalted: 100,
-  exaltedToChaosRate: 12,
-  chaosPerDivineRate: 180,
-  divineToExaltedRate: 16,
+  exaltedPerChaos: 5.5,
+  chaosPerDivineRate: 14.5,
+  divineToExaltedRate: 90,
   safetyMarginPercent: 1,
   minimumProfitPercent: 2,
 };
@@ -18,7 +18,7 @@ const STATUS = {
 // Fields that must be > 0 for a valid calculation.
 const REQUIRED_POSITIVE = [
   { id: "startExalted", label: "Start Exalted" },
-  { id: "exaltedToChaosRate", label: "1 Exalted = Chaos rate" },
+  { id: "exaltedPerChaos", label: "1 Chaos = Exalted rate" },
   { id: "chaosPerDivineRate", label: "1 Divine = Chaos rate" },
   { id: "divineToExaltedRate", label: "1 Divine = Exalted rate" },
 ];
@@ -35,7 +35,7 @@ function readInputs() {
   const get = (id) => document.getElementById(id).value.trim();
   return {
     startExalted: get("startExalted"),
-    exaltedToChaosRate: get("exaltedToChaosRate"),
+    exaltedPerChaos: get("exaltedPerChaos"),
     chaosPerDivineRate: get("chaosPerDivineRate"),
     divineToExaltedRate: get("divineToExaltedRate"),
     safetyMarginPercent: get("safetyMarginPercent"),
@@ -85,14 +85,15 @@ function validateInputs(raw) {
 function calculateArbitrage(input) {
   const {
     startExalted,
-    exaltedToChaosRate,
+    exaltedPerChaos,
     chaosPerDivineRate,
     divineToExaltedRate,
     safetyMarginPercent,
     minimumProfitPercent,
   } = input;
 
-  const chaosAmount = startExalted * exaltedToChaosRate;
+  // Step 1 sells Exalted to acquire Chaos; each Chaos costs `exaltedPerChaos`.
+  const chaosAmount = startExalted / exaltedPerChaos;
   const divineAmount = chaosAmount / chaosPerDivineRate;
   const finalExalted = divineAmount * divineToExaltedRate;
 

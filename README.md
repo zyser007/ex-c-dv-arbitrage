@@ -18,7 +18,7 @@ Open `index.html` in any browser (desktop or mobile). Enter:
 | Input | Meaning |
 | --- | --- |
 | **Start Exalted** | How many Exalted Orb you start with |
-| **1 Exalted = X Chaos** | Chaos you get for selling 1 Exalted |
+| **1 Chaos = X Exalted** | Exalted you pay to buy 1 Chaos |
 | **1 Divine = X Chaos** | Chaos you must pay to buy 1 Divine |
 | **1 Divine = X Exalted** | Exalted you get for selling 1 Divine |
 | **Safety Margin %** | Risk haircut applied to the final amount |
@@ -29,7 +29,7 @@ The result recalculates instantly as you type.
 ## Formula
 
 ```js
-chaosAmount  = startExalted * exaltedToChaosRate;
+chaosAmount  = startExalted / exaltedPerChaos;
 divineAmount = chaosAmount  / chaosPerDivineRate;
 finalExalted = divineAmount * divineToExaltedRate;
 

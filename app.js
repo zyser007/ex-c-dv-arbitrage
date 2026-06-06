@@ -34,14 +34,9 @@ const CURRENCIES = {
   },
 };
 
-// All 6 triangular permutations (each loops back to its start).
+// Single active route. (Add more here to re-enable multi-route scanning.)
 const ROUTES = [
   ["exalted", "chaos", "divine"],
-  ["exalted", "divine", "chaos"],
-  ["chaos", "exalted", "divine"],
-  ["chaos", "divine", "exalted"],
-  ["divine", "exalted", "chaos"],
-  ["divine", "chaos", "exalted"],
 ];
 
 const STATUS = {
@@ -262,22 +257,29 @@ function renderResult(scan) {
       ? `<p class="status-warning">Profit looks thin. Real trade spread, delay, or fake listings may remove the gain.</p>`
       : "";
 
-  const routeRows = scan
-    .map((r, i) => {
-      const sign = r.adjustedProfit >= 0 ? "pos" : "neg";
-      return `
-      <div class="route-row ${i === 0 ? "best" : ""}">
-        <div class="route-path">${routePathHtml(r.route)}</div>
-        <div class="route-meta">
-          <span class="route-pct ${sign}">${signed(r.adjustedProfitPercent, 2)}%</span>
-          <span class="pill ${statusClass(r.status)}">${r.status}</span>
-        </div>
-      </div>`;
-    })
-    .join("");
+  let routesSection = "";
+  if (scan.length > 1) {
+    const routeRows = scan
+      .map((r, i) => {
+        const sign = r.adjustedProfit >= 0 ? "pos" : "neg";
+        return `
+        <div class="route-row ${i === 0 ? "best" : ""}">
+          <div class="route-path">${routePathHtml(r.route)}</div>
+          <div class="route-meta">
+            <span class="route-pct ${sign}">${signed(r.adjustedProfitPercent, 2)}%</span>
+            <span class="pill ${statusClass(r.status)}">${r.status}</span>
+          </div>
+        </div>`;
+      })
+      .join("");
+    routesSection = `
+      <h2 class="routes-heading">All Routes</h2>
+      <p class="routes-note">Profit % below is after the safety margin. Rotations of the same loop share a %.</p>
+      <div class="routes">${routeRows}</div>`;
+  }
 
   el.innerHTML = `
-    <h2>Best Route</h2>
+    <h2>${scan.length > 1 ? "Best Route" : "Route"}</h2>
     <div class="best-route-path">${routePathHtml(best.route)}</div>
     <ol class="steps">
       <li><span class="step-num">0.</span> Start:
@@ -300,10 +302,7 @@ function renderResult(scan) {
 
     <div class="status-banner ${statusClass(best.status)}">${best.status}</div>
     ${warning}
-
-    <h2 class="routes-heading">All Routes</h2>
-    <p class="routes-note">Profit % below is after the safety margin. Rotations of the same loop share a %.</p>
-    <div class="routes">${routeRows}</div>`;
+    ${routesSection}`;
 }
 
 /* ---------- persistence + sharing ---------- */

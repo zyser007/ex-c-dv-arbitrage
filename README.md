@@ -1,20 +1,19 @@
 # POE2 Orb Arbitrage Calculator
 
-A small, dependency-free web app that scans for possible **triangular
-arbitrage** between three POE2 currencies — Exalted, Chaos, and Divine.
-
-It evaluates all six loop permutations at once and highlights the most
-profitable one:
+A small, dependency-free web app that checks for possible **triangular
+arbitrage** between three POE2 currencies, on the loop:
 
 ```
-Exalted → Chaos → Divine → Exalted     Chaos → Divine → Exalted → Chaos
-Exalted → Divine → Chaos → Exalted     Divine → Exalted → Chaos → Divine
-Chaos → Exalted → Divine → Chaos       Divine → Chaos → Exalted → Divine
+Exalted → Chaos → Divine → Exalted
 ```
 
 This is a **manual** trade-feasibility tool — no API, no scraping, no login,
-no automation. You enter real, executable trade rates and instantly see which
-loop (if any) is profitable.
+no automation. You enter real, executable trade rates and instantly see
+whether the loop is profitable.
+
+> The engine is route-agnostic — add more entries to `ROUTES` in `app.js` to
+> re-enable multi-route scanning (it will list every route and highlight the
+> most profitable).
 
 ## Usage
 
@@ -22,14 +21,14 @@ Open `index.html` in any browser (desktop or mobile). Enter:
 
 | Input | Meaning |
 | --- | --- |
-| **Start amount** | Units of whichever orb a route begins with |
+| **Start Exalted** | How many Exalted Orb you start with |
 | **1 Chaos = X Exalted** | Exalted you pay to buy 1 Chaos |
 | **1 Divine = X Chaos** | Chaos you must pay to buy 1 Divine |
 | **1 Divine = X Exalted** | Exalted you get for selling 1 Divine |
 | **Safety Margin %** | Risk haircut applied to the final amount |
 | **Minimum Profit %** | Threshold below which profit is flagged "too thin" |
 
-The scan recalculates instantly as you type.
+The result recalculates instantly as you type.
 
 ### Convenience features
 

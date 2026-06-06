@@ -11,8 +11,8 @@
     <header class="app-header">
       <h1>POE2 Orb Arbitrage Calculator</h1>
       <p class="subtitle">
-        Manual triangular arbitrage checker for
-        <span class="route">Exalted → Chaos → Divine → Exalted</span>.
+        Manual triangular arbitrage scanner — checks all
+        <span class="route">Exalted · Chaos · Divine</span> loops at once.
       </p>
     </header>
 
@@ -20,20 +20,20 @@
       <!-- INPUT PANEL -->
       <section class="panel inputs" aria-label="Inputs">
         <div class="field">
-          <label for="startExalted">
-            <img class="orb-icon" src="sprites/exalted-orb.png" alt="" onerror="this.style.display='none'">
-            Start Exalted
+          <label for="startAmount">
+            <img class="orb-icon" src="sprites/exalted-orb.svg" alt="" onerror="this.style.display='none'">
+            Start amount
           </label>
-          <input type="number" id="startExalted" step="any" min="0" inputmode="decimal" />
-          <small class="hint">How many Exalted Orb you start with</small>
+          <input type="number" id="startAmount" step="any" min="0" inputmode="decimal" />
+          <small class="hint">Units of whichever orb a route begins with</small>
         </div>
 
         <div class="field">
           <label for="exaltedPerChaos">
             1
-            <img class="orb-icon" src="sprites/chaos-orb.png" alt="" onerror="this.style.display='none'">
+            <img class="orb-icon" src="sprites/chaos-orb.svg" alt="" onerror="this.style.display='none'">
             Chaos Orb =
-            <img class="orb-icon" src="sprites/exalted-orb.png" alt="" onerror="this.style.display='none'">
+            <img class="orb-icon" src="sprites/exalted-orb.svg" alt="" onerror="this.style.display='none'">
             Exalted Orb
           </label>
           <input type="number" id="exaltedPerChaos" step="any" min="0" inputmode="decimal" />
@@ -41,26 +41,26 @@
         </div>
 
         <div class="field">
-          <label for="chaosPerDivineRate">
+          <label for="chaosPerDivine">
             1
-            <img class="orb-icon" src="sprites/divine-orb.png" alt="" onerror="this.style.display='none'">
+            <img class="orb-icon" src="sprites/divine-orb.svg" alt="" onerror="this.style.display='none'">
             Divine Orb =
-            <img class="orb-icon" src="sprites/chaos-orb.png" alt="" onerror="this.style.display='none'">
+            <img class="orb-icon" src="sprites/chaos-orb.svg" alt="" onerror="this.style.display='none'">
             Chaos Orb
           </label>
-          <input type="number" id="chaosPerDivineRate" step="any" min="0" inputmode="decimal" />
+          <input type="number" id="chaosPerDivine" step="any" min="0" inputmode="decimal" />
           <small class="hint">Chaos you must pay to buy 1 Divine</small>
         </div>
 
         <div class="field">
-          <label for="divineToExaltedRate">
+          <label for="exaltedPerDivine">
             1
-            <img class="orb-icon" src="sprites/divine-orb.png" alt="" onerror="this.style.display='none'">
+            <img class="orb-icon" src="sprites/divine-orb.svg" alt="" onerror="this.style.display='none'">
             Divine Orb =
-            <img class="orb-icon" src="sprites/exalted-orb.png" alt="" onerror="this.style.display='none'">
+            <img class="orb-icon" src="sprites/exalted-orb.svg" alt="" onerror="this.style.display='none'">
             Exalted Orb
           </label>
-          <input type="number" id="divineToExaltedRate" step="any" min="0" inputmode="decimal" />
+          <input type="number" id="exaltedPerDivine" step="any" min="0" inputmode="decimal" />
           <small class="hint">Exalted you get for selling 1 Divine</small>
         </div>
 
@@ -82,6 +82,7 @@
           <button id="calculateBtn" type="button">Calculate</button>
           <button id="resetBtn" type="button" class="secondary">Reset</button>
         </div>
+        <button id="copyLinkBtn" type="button" class="link-btn">Copy shareable link</button>
       </section>
 
       <!-- RESULT PANEL -->

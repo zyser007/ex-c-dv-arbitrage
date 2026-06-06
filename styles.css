@@ -327,11 +327,131 @@ button.secondary {
   line-height: 1.5;
 }
 
+/* orb icon sizes */
+.orb-icon.sm {
+  width: 16px;
+  height: 16px;
+}
+
+/* copy link button */
+.link-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: var(--stone);
+  color: var(--text);
+  border: 1px dashed var(--border);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.link-btn.copied {
+  border-style: solid;
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* best route header */
+.best-route-path,
+.route-path {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.best-route-path {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(201, 164, 92, 0.1);
+  border: 1px solid var(--border);
+  font-weight: 700;
+  color: var(--gold-bright);
+}
+
+.cur {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.arrow {
+  color: var(--text-dim);
+  font-weight: 700;
+}
+
+/* all-routes list */
+.routes-heading {
+  margin-top: 22px;
+}
+
+.routes-note {
+  margin: -8px 0 12px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.routes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+}
+
+.route-row.best {
+  border-color: var(--gold);
+  background: rgba(201, 164, 92, 0.08);
+  box-shadow: 0 0 0 1px rgba(201, 164, 92, 0.25) inset;
+}
+
+.route-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.route-pct {
+  font-weight: 800;
+  font-size: 1rem;
+  min-width: 64px;
+  text-align: right;
+}
+
+.pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
 @media (max-width: 720px) {
   .layout {
     grid-template-columns: 1fr;
   }
   .app-header h1 {
     font-size: 1.45rem;
+  }
+  .route-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .route-pct {
+    text-align: left;
   }
 }

@@ -294,7 +294,7 @@ function renderResult(scan) {
     .map((s, i) => {
       const fee =
         s.goldFee > 0
-          ? ` <span class="step-fee">· ${formatNumber(s.goldFee, 0)} gold</span>`
+          ? ` <span class="step-fee">· ${formatNumber(Math.floor(s.goldFee), 0)} gold</span>`
           : "";
       return `
       <li><span class="step-num">${i + 1}.</span>
@@ -336,11 +336,11 @@ function renderResult(scan) {
     <div class="gold-card">
       <div class="gold-row">
         <span class="card-label">Total Gold Fee</span>
-        <span class="gold-value">${formatNumber(best.goldFee, 0)} gold</span>
+        <span class="gold-value">${formatNumber(Math.floor(best.goldFee), 0)} gold</span>
       </div>
       <div class="gold-sub">
-        ≈ ${formatNumber(best.goldFeeInStart)} ${startShort}-equivalent · net after gold:
-        <span class="${netSign}">${signed(best.netProfitAfterGold)} ${startShort}</span>
+        ≈ ${formatNumber(Math.floor(best.goldFeeInStart), 0)} ${startShort}-equivalent · net after gold:
+        <span class="${netSign}">${signed(Math.floor(best.netProfitAfterGold), 0)} ${startShort}</span>
       </div>
     </div>`
       : "";
@@ -358,12 +358,12 @@ function renderResult(scan) {
     <div class="profit-cards">
       <div class="card">
         <span class="card-label">Raw Profit</span>
-        <span class="card-value ${profitSign}">${signed(best.profit)} ${startShort}</span>
+        <span class="card-value ${profitSign}">${signed(Math.floor(best.profit), 0)} ${startShort}</span>
         <span class="card-sub ${profitSign}">${signed(best.profitPercent, 2)}%</span>
       </div>
       <div class="card">
         <span class="card-label">After ${formatNumber(best.safetyMarginPercent, 2)}% Safety</span>
-        <span class="card-value ${adjSign}">${signed(best.adjustedProfit)} ${startShort}</span>
+        <span class="card-value ${adjSign}">${signed(Math.floor(best.adjustedProfit), 0)} ${startShort}</span>
         <span class="card-sub ${adjSign}">${signed(best.adjustedProfitPercent, 2)}%</span>
       </div>
     </div>

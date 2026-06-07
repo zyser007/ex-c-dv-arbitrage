@@ -50,7 +50,8 @@ const STATUS = {
 
 const STORAGE_KEY = "poe2-arb-state";
 const LANG_KEY = "poe2-arb-lang";
-let lang = "en";
+const DEFAULT_LANG = "th";
+let lang = DEFAULT_LANG;
 
 // Orb names are kept in English (item proper nouns) in both languages.
 const I18N = {
@@ -76,6 +77,7 @@ const I18N = {
     reset_btn: "Reset",
     copy_btn: "Copy shareable link",
     copy_done: "Link copied!",
+    install_btn: "Install App",
     disclaimer:
       "This calculator only checks mathematical opportunity from manually entered rates. Real trades can fail due to price movement, fake listings, low stock, whisper delay, and market spread.",
     route_title: "Route",
@@ -110,7 +112,7 @@ const I18N = {
     msg_negative: "{label} cannot be negative.",
   },
   th: {
-    title: "เครื่องคำนวณ Arbitrage ออร์บ POE2",
+    title: "POE2 Orb Arbitrage Calculator",
     subtitle: "ตัวเช็ก arbitrage สามเหลี่ยมแบบกรอกเอง สำหรับ",
     start_label: "Exalted เริ่มต้น",
     start_hint: "เริ่มต้นด้วย Exalted Orb กี่อัน",
@@ -131,6 +133,7 @@ const I18N = {
     reset_btn: "รีเซ็ต",
     copy_btn: "คัดลอกลิงก์แชร์",
     copy_done: "คัดลอกลิงก์แล้ว!",
+    install_btn: "ติดตั้งแอป",
     disclaimer:
       "เครื่องมือนี้ตรวจแค่โอกาสเชิงตัวเลขจากเรตที่กรอกเอง การเทรดจริงอาจล้มเหลวได้จากราคาที่ขยับ ประกาศหลอก ของไม่พอ ดีเลย์ตอน whisper และส่วนต่างราคาตลาด",
     route_title: "เส้นทาง",
@@ -575,7 +578,7 @@ function updateUrl(raw) {
   Object.keys(PARAM_MAP).forEach((key) => {
     if (raw[key] !== "") params.set(PARAM_MAP[key], raw[key]);
   });
-  if (lang && lang !== "en") params.set("lang", lang);
+  if (lang && lang !== DEFAULT_LANG) params.set("lang", lang);
   const qs = params.toString();
   history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
 }
@@ -631,7 +634,7 @@ function flashCopyButton() {
 /* ---------- language ---------- */
 
 function loadLang() {
-  let l = "en";
+  let l = DEFAULT_LANG;
   try {
     l = localStorage.getItem(LANG_KEY) || l;
   } catch (e) {
@@ -641,7 +644,7 @@ function loadLang() {
     const p = new URLSearchParams(location.search);
     if (p.has("lang")) l = p.get("lang");
   }
-  lang = l === "th" ? "th" : "en";
+  lang = l === "en" ? "en" : "th";
 }
 
 function applyStaticI18n() {
@@ -718,6 +721,37 @@ function registerServiceWorker() {
   });
 }
 
+// Show an "Install App" button when the browser offers an install prompt.
+let deferredInstallPrompt = null;
+
+function setupInstallPrompt() {
+  const btn = document.getElementById("installBtn");
+  if (!btn || typeof window === "undefined") return;
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    btn.hidden = false;
+  });
+
+  btn.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    try {
+      await deferredInstallPrompt.userChoice;
+    } catch (e) {
+      /* ignore */
+    }
+    deferredInstallPrompt = null;
+    btn.hidden = true;
+  });
+
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    btn.hidden = true;
+  });
+}
+
 function init() {
   loadLang();
   applyStaticI18n();
@@ -725,6 +759,7 @@ function init() {
   bindEvents();
   run();
   registerServiceWorker();
+  setupInstallPrompt();
 }
 
 if (typeof document !== "undefined") {

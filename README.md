@@ -39,11 +39,9 @@ gold fee (per trade) = orbs bought × gold rate of that orb
 ```
 
 Enter a gold rate per orb (e.g. Exalted 120, Chaos 160, Divine 800) and the
-app shows the gold fee per step, the total, that total as a start-currency
-equivalent (total ÷ gold-per-start-orb), and the net profit after gold.
-Leave a rate blank for no fee on that orb. Gold is a separate resource from
-orbs, so it does not change the orb-based profit/status — it is shown
-alongside so you can judge whether the loop is worth the gold.
+app shows the gold fee per step plus the total. Leave a rate blank for no fee
+on that orb. Gold is a separate resource from orbs, so it does not change the
+orb-based profit/status — it is shown alongside as a reference cost.
 
 ### Convenience features
 

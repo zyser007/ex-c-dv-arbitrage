@@ -329,7 +329,6 @@ function renderResult(scan) {
       <div class="routes">${routeRows}</div>`;
   }
 
-  const netSign = best.netProfitAfterGold >= 0 ? "pos" : "neg";
   const goldSection =
     best.goldFee > 0
       ? `
@@ -337,10 +336,6 @@ function renderResult(scan) {
       <div class="gold-row">
         <span class="card-label">Total Gold Fee</span>
         <span class="gold-value">${formatNumber(Math.floor(best.goldFee), 0)} gold</span>
-      </div>
-      <div class="gold-sub">
-        ≈ ${formatNumber(Math.floor(best.goldFeeInStart), 0)} ${startShort}-equivalent · net after gold:
-        <span class="${netSign}">${signed(Math.floor(best.netProfitAfterGold), 0)} ${startShort}</span>
       </div>
     </div>`
       : "";

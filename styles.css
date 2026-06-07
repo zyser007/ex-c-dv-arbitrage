@@ -403,6 +403,46 @@ button.secondary {
   opacity: 0.9;
 }
 
+/* gold budget → loops card */
+.budget-card {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(201, 164, 92, 0.08);
+  border: 1px solid var(--border);
+}
+
+.budget-card .card-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.budget-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--text-dim);
+}
+
+.budget-loops {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+}
+
+.budget-profit {
+  margin-left: auto;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.budget-sub {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
 /* leftover summary card */
 .leftover-card {
   margin: 16px 0;

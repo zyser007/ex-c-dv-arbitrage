@@ -3,7 +3,7 @@
 /* ---------- config ---------- */
 
 const DEFAULTS = {
-  startAmount: 100,
+  startAmount: 900,
   exaltedPerChaos: 5.5,
   chaosPerDivine: 14.5,
   exaltedPerDivine: 90,
@@ -12,6 +12,7 @@ const DEFAULTS = {
   goldPerExalted: 120,
   goldPerChaos: 160,
   goldPerDivine: 800,
+  goldBudget: 0,
 };
 
 // `icon` hot-links the official PoE CDN art (loaded by the visitor's browser);
@@ -68,6 +69,8 @@ const I18N = {
     gold_exalted: "Gold per Exalted",
     gold_chaos: "Gold per Chaos",
     gold_divine: "Gold per Divine",
+    gold_budget: "Gold budget (optional)",
+    gold_budget_hint: "Total gold you can spend — shows how many loops you can run",
     optional_settings: "Optional Settings",
     safety_label: "Safety Margin %",
     safety_hint: "Haircut applied to final amount for risk",
@@ -90,6 +93,11 @@ const I18N = {
     gold_unit: "gold",
     leftover_orbs: "Leftover orbs",
     in_profit: "in profit",
+    budget_title: "With your gold budget",
+    budget_loops_unit: "loops",
+    budget_total_profit: "Total profit",
+    budget_gold_used: "Gold used",
+    budget_left: "left",
     all_routes: "All Routes",
     routes_note: "Profit % below is after the safety margin. Rotations of the same loop share a %.",
     warning_thin: "Profit looks thin. Real trade spread, delay, or fake listings may remove the gain.",
@@ -106,6 +114,7 @@ const I18N = {
     f_goldPerExalted: "Gold per Exalted",
     f_goldPerChaos: "Gold per Chaos",
     f_goldPerDivine: "Gold per Divine",
+    f_goldBudget: "Gold budget",
     msg_required: "{label} is required.",
     msg_number: "{label} must be a number.",
     msg_gt0: "{label} must be greater than 0.",
@@ -124,6 +133,8 @@ const I18N = {
     gold_exalted: "Gold ต่อ Exalted",
     gold_chaos: "Gold ต่อ Chaos",
     gold_divine: "Gold ต่อ Divine",
+    gold_budget: "งบ Gold (ไม่บังคับ)",
+    gold_budget_hint: "Gold ทั้งหมดที่ใช้ได้ — จะบอกว่าวนได้กี่รอบ",
     optional_settings: "ตั้งค่าเพิ่มเติม",
     safety_label: "เผื่อความปลอดภัย %",
     safety_hint: "หักออกจากยอดสุดท้ายเพื่อกันความเสี่ยง",
@@ -146,6 +157,11 @@ const I18N = {
     gold_unit: "gold",
     leftover_orbs: "ออร์บที่เหลือ",
     in_profit: "รวมในกำไรแล้ว",
+    budget_title: "ด้วยงบ Gold ที่มี",
+    budget_loops_unit: "รอบ",
+    budget_total_profit: "กำไรรวม",
+    budget_gold_used: "Gold ที่ใช้",
+    budget_left: "เหลือ",
     all_routes: "ทุกเส้นทาง",
     routes_note: "% กำไรด้านล่างคิดหลังเผื่อความปลอดภัยแล้ว · การหมุนวนเส้นเดียวกันได้ % เท่ากัน",
     warning_thin: "กำไรดูบางมาก ส่วนต่างราคา ดีเลย์ หรือประกาศหลอกอาจทำให้กำไรหายได้",
@@ -162,6 +178,7 @@ const I18N = {
     f_goldPerExalted: "Gold ต่อ Exalted",
     f_goldPerChaos: "Gold ต่อ Chaos",
     f_goldPerDivine: "Gold ต่อ Divine",
+    f_goldBudget: "งบ Gold",
     msg_required: "ต้องกรอก {label}",
     msg_number: "{label} ต้องเป็นตัวเลข",
     msg_gt0: "{label} ต้องมากกว่า 0",
@@ -196,6 +213,7 @@ const PARAM_MAP = {
   goldPerExalted: "ge",
   goldPerChaos: "gc",
   goldPerDivine: "gd",
+  goldBudget: "gb",
 };
 
 const REQUIRED_POSITIVE = [
@@ -210,11 +228,12 @@ const OPTIONAL_NONNEG = [
   { id: "minimumProfitPercent", labelKey: "f_minimumProfitPercent" },
 ];
 
-// Gold fee per orb bought; blank counts as 0 (no fee on that orb).
+// Gold fields; blank counts as 0 (no fee / no budget).
 const GOLD_FIELDS = [
   { id: "goldPerExalted", labelKey: "f_goldPerExalted" },
   { id: "goldPerChaos", labelKey: "f_goldPerChaos" },
   { id: "goldPerDivine", labelKey: "f_goldPerDivine" },
+  { id: "goldBudget", labelKey: "f_goldBudget" },
 ];
 
 const ALL_FIELDS = [...REQUIRED_POSITIVE, ...OPTIONAL_NONNEG, ...GOLD_FIELDS];
@@ -362,6 +381,21 @@ function evaluateRoute(route, input) {
   const adjustedProfit = adjustedFinal - startAmount;
   const adjustedProfitPercent = (adjustedProfit / startAmount) * 100;
 
+  // How far a gold budget stretches when repeating this exact loop.
+  const goldBudget = Math.floor(input.goldBudget || 0);
+  let budget = null;
+  if (goldBudget > 0 && goldFee > 0) {
+    const maxLoops = Math.floor(goldBudget / goldFee);
+    const goldUsed = maxLoops * goldFee;
+    budget = {
+      goldBudget,
+      maxLoops,
+      totalProfit: maxLoops * profit,
+      goldUsed,
+      goldLeft: goldBudget - goldUsed,
+    };
+  }
+
   return {
     route,
     startCurrency,
@@ -378,6 +412,7 @@ function evaluateRoute(route, input) {
     goldFee,
     startLeftover,
     otherLeftovers,
+    budget,
     status: getStatus(adjustedProfitPercent, minimumProfitPercent),
   };
 }
@@ -499,6 +534,22 @@ function renderResult(scan) {
       ? `<p class="status-warning">${t("warning_thin")}</p>`
       : "";
 
+  const b = best.budget;
+  const budgetCard = b
+    ? `
+    <div class="budget-card">
+      <span class="card-label">${t("budget_title")}</span>
+      <div class="budget-main">
+        <span class="budget-loops">${formatNumber(b.maxLoops, 0)}</span> ${t("budget_loops_unit")}
+        <span class="budget-profit ${b.totalProfit >= 0 ? "pos" : "neg"}">${signed(b.totalProfit, 0)} ${startShort}</span>
+      </div>
+      <div class="budget-sub">
+        ${t("budget_gold_used")}: ${formatNumber(b.goldUsed, 0)} / ${formatNumber(b.goldBudget, 0)} ${t("gold_unit")}
+        (${t("budget_left")} ${formatNumber(b.goldLeft, 0)})
+      </div>
+    </div>`
+    : "";
+
   let routesSection = "";
   if (scan.length > 1) {
     const routeRows = scan
@@ -564,6 +615,7 @@ function renderResult(scan) {
     <div class="status-banner ${statusClass(best.status)}">${statusText(best.status)}<span class="banner-pct">${signed(best.adjustedProfitPercent, 2)}%</span></div>
     ${warning}
     ${leftoverCard}
+    ${budgetCard}
     ${routesSection}`;
 }
 

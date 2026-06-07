@@ -43,6 +43,10 @@ app shows the gold fee per step plus the total. Leave a rate blank for no fee
 on that orb. Gold is a separate resource from orbs, so it does not change the
 orb-based profit/status — it is shown alongside as a reference cost.
 
+Optionally enter a **gold budget**: the app then shows how many times you can
+repeat the exact loop, the total profit across those loops, and how much gold
+is used / left.
+
 ### Whole orbs & leftovers
 
 Orbs are integers, so every step rounds the orbs bought *down*. A buy step
@@ -99,7 +103,19 @@ index.html    markup
 styles.css    dark fantasy / POE-style theme
 app.js        conversion, route scanning, validation, persistence, rendering
 sprites/      local stylized SVG orb icons (fallback)
+test/         calculation unit tests (node --test)
 ```
+
+## Tests
+
+Pure calculation logic is covered by Node's built-in test runner:
+
+```
+npm test      # or: node --test
+```
+
+CI runs the suite on every push and the GitHub Pages deploy only proceeds
+when the tests pass.
 
 ## Orb icons
 

@@ -1,0 +1,9 @@
+{
+  "name": "poe2-orb-arbitrage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Manual triangular arbitrage checker for Path of Exile 2 orbs.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

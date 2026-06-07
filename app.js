@@ -314,10 +314,6 @@ function renderResult(scan) {
 
   const stepLis = best.steps
     .map((s, i) => {
-      const left =
-        s.leftover > 0
-          ? ` <span class="step-left">· ${formatNumber(s.leftover, 0)} ${CURRENCIES[s.from].short} left</span>`
-          : "";
       const fee =
         s.goldFee > 0
           ? ` <span class="step-fee">· ${formatNumber(Math.floor(s.goldFee), 0)} gold</span>`
@@ -325,15 +321,39 @@ function renderResult(scan) {
       return `
       <li><span class="step-num">${i + 1}.</span>
         ${formatNumber(s.inAmount)} ${CURRENCIES[s.from].short} →
-        <span class="amt">${formatNumber(s.outAmount)}</span> ${CURRENCIES[s.to].short}${left}${fee}</li>`;
+        <span class="amt">${formatNumber(s.outAmount)}</span> ${CURRENCIES[s.to].short}${fee}</li>`;
     })
     .join("");
 
-  const leftoverNote =
-    best.otherLeftovers.length > 0
-      ? `<p class="routes-note">Plus leftover kept in other orbs: ${best.otherLeftovers
-          .map((l) => `${formatNumber(l.amount, 0)} ${CURRENCIES[l.currency].short}`)
-          .join(", ")} (not included in the ${startShort} profit).</p>`
+  // Leftover summary: start-currency leftover is folded into profit; the rest
+  // is kept in other orbs. Show every orb that has a remainder, with its icon.
+  const allLeftovers = [];
+  if (best.startLeftover > 0) {
+    allLeftovers.push({ currency: best.startCurrency, amount: best.startLeftover, inProfit: true });
+  }
+  best.otherLeftovers.forEach((l) =>
+    allLeftovers.push({ currency: l.currency, amount: l.amount, inProfit: false })
+  );
+
+  const leftoverCard =
+    allLeftovers.length > 0
+      ? `
+    <div class="leftover-card">
+      <span class="card-label">Leftover orbs</span>
+      <div class="leftover-list">
+        ${allLeftovers
+          .map(
+            (l) => `
+          <span class="leftover-item">
+            <img class="orb-icon" src="${CURRENCIES[l.currency].icon}" alt=""
+              onerror="this.onerror=null;this.src='${CURRENCIES[l.currency].fallback}'">
+            <span class="leftover-amt">${formatNumber(l.amount, 0)}</span> ${CURRENCIES[l.currency].short}
+            ${l.inProfit ? '<span class="tag">in profit</span>' : ""}
+          </span>`
+          )
+          .join("")}
+      </div>
+    </div>`
       : "";
 
   const warning =
@@ -382,7 +402,6 @@ function renderResult(scan) {
       ${stepLis}
     </ol>
     <p class="routes-note">Whole orbs only — each step is rounded down.</p>
-    ${leftoverNote}
 
     <div class="profit-cards">
       <div class="card">
@@ -400,6 +419,7 @@ function renderResult(scan) {
 
     <div class="status-banner ${statusClass(best.status)}">${best.status}</div>
     ${warning}
+    ${leftoverCard}
     ${routesSection}`;
 }
 

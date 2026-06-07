@@ -340,10 +340,57 @@ button.secondary {
   opacity: 0.9;
 }
 
-/* per-step leftover */
-.step-left {
-  color: var(--text-dim);
-  font-size: 0.82rem;
+/* leftover summary card */
+.leftover-card {
+  margin: 16px 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+}
+
+.leftover-card .card-label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.leftover-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.leftover-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--stone);
+  border: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+
+.leftover-item .orb-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.leftover-amt {
+  font-weight: 800;
+  color: var(--gold-bright);
+}
+
+.leftover-item .tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--green);
+  background: var(--green-bg);
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  padding: 2px 7px;
 }
 
 /* gold fee summary card */

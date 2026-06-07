@@ -525,7 +525,13 @@ function renderResult(scan) {
       ? `
     <div class="gold-card">
       <div class="gold-row">
-        <span class="card-label">${t("total_gold_fee")}</span>
+        <span class="card-label">
+          <svg class="coin" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="#e8c97a" stroke="#7a5a16" stroke-width="2"/>
+            <circle cx="12" cy="12" r="5" fill="none" stroke="#7a5a16" stroke-width="1.5" opacity="0.6"/>
+          </svg>
+          ${t("total_gold_fee")}
+        </span>
         <span class="gold-value">${formatNumber(Math.floor(best.goldFee), 0)} ${t("gold_unit")}</span>
       </div>
     </div>`
@@ -555,7 +561,7 @@ function renderResult(scan) {
     </div>
     ${goldSection}
 
-    <div class="status-banner ${statusClass(best.status)}">${statusText(best.status)}</div>
+    <div class="status-banner ${statusClass(best.status)}">${statusText(best.status)}<span class="banner-pct">${signed(best.adjustedProfitPercent, 2)}%</span></div>
     ${warning}
     ${leftoverCard}
     ${routesSection}`;

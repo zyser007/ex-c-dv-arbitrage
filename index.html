@@ -29,8 +29,12 @@
   <main class="app">
     <header class="app-header">
       <div class="top-bar">
-        <button id="installBtn" type="button" class="install-btn" hidden data-i18n="install_btn">Install App</button>
+        <button id="installBtn" type="button" class="install-btn" hidden>
+          <svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
+          <span data-i18n="install_btn">Install App</span>
+        </button>
         <div class="lang-switch">
+          <svg class="lang-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18"/></svg>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
           <button type="button" class="lang-btn" data-lang="th">TH</button>
         </div>
@@ -116,7 +120,7 @@
           </div>
         </details>
 
-        <details class="settings" open>
+        <details class="settings">
           <summary data-i18n="optional_settings">Optional Settings</summary>
           <div class="field">
             <label for="safetyMarginPercent" data-i18n="safety_label">Safety Margin %</label>

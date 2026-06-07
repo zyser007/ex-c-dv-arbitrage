@@ -7,7 +7,7 @@
   --gold: #c9a45c;
   --gold-bright: #e8c97a;
   --text: #e7ddca;
-  --text-dim: #9b8f78;
+  --text-dim: #b8ab8c;
   --green: #4caf6d;
   --green-bg: #163021;
   --yellow: #d8b13a;
@@ -53,12 +53,28 @@ body {
 .lang-switch {
   margin-left: auto;
   display: flex;
+  align-items: center;
   gap: 4px;
+}
+
+.lang-ico {
+  width: 16px;
+  height: 16px;
+  color: var(--text-dim);
+  margin-right: 2px;
+}
+
+.btn-ico {
+  width: 14px;
+  height: 14px;
 }
 
 .lang-btn,
 .install-btn {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   padding: 5px 10px;
   font-size: 0.78rem;
   font-weight: 700;
@@ -121,7 +137,7 @@ body {
 }
 
 .field {
-  margin-bottom: 16px;
+  margin-bottom: 11px;
 }
 
 .field label {
@@ -132,7 +148,7 @@ body {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--gold);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .orb-icon {
@@ -149,7 +165,7 @@ body {
   border-radius: 8px;
   color: var(--text);
   font-size: 1rem;
-  padding: 10px 12px;
+  padding: 8px 12px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -167,8 +183,8 @@ body {
 .hint {
   display: block;
   color: var(--text-dim);
-  font-size: 0.78rem;
-  margin-top: 4px;
+  font-size: 0.76rem;
+  margin-top: 3px;
 }
 
 .settings {
@@ -301,9 +317,9 @@ button.secondary {
 
 .card .card-sub {
   display: block;
-  font-size: 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
   margin-top: 2px;
-  opacity: 0.85;
 }
 
 .pos {
@@ -321,6 +337,11 @@ button.secondary {
   font-weight: 800;
   font-size: 1.1rem;
   border: 1px solid;
+}
+
+.banner-pct {
+  margin-left: 8px;
+  font-size: 1.25rem;
 }
 
 .status-profitable {
@@ -435,26 +456,38 @@ button.secondary {
   padding: 2px 7px;
 }
 
-/* gold fee summary card */
+/* gold fee summary card (secondary info — kept subtle) */
 .gold-card {
   margin-bottom: 16px;
-  padding: 12px 14px;
+  padding: 10px 14px;
   border-radius: 8px;
-  background: rgba(201, 164, 92, 0.08);
-  border: 1px solid var(--gold);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
 }
 
 .gold-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
+.gold-row .card-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.coin {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
 .gold-value {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--gold-bright);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold);
 }
 
 .gold-sub {

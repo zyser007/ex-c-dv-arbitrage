@@ -166,7 +166,9 @@ function convert(amount, from, to, rates) {
 }
 
 function evaluateRoute(route, input) {
-  const { startAmount, safetyMarginPercent, minimumProfitPercent } = input;
+  const { safetyMarginPercent, minimumProfitPercent } = input;
+  // In-game orbs are whole numbers — round down at every step.
+  const startAmount = Math.floor(input.startAmount);
   const goldPerOrb = {
     exalted: input.goldPerExalted || 0,
     chaos: input.goldPerChaos || 0,
@@ -180,7 +182,7 @@ function evaluateRoute(route, input) {
   for (let i = 0; i < 3; i++) {
     const from = path[i];
     const to = path[i + 1];
-    const out = convert(amount, from, to, input);
+    const out = Math.floor(convert(amount, from, to, input));
     // Gold fee is paid on the orb you buy (the step's output).
     const stepGold = out * goldPerOrb[to];
     goldFee += stepGold;
@@ -351,6 +353,7 @@ function renderResult(scan) {
         <span class="amt">${formatNumber(best.startAmount)}</span> ${startShort}</li>
       ${stepLis}
     </ol>
+    <p class="routes-note">Whole orbs only — each step is rounded down.</p>
 
     <div class="profit-cards">
       <div class="card">

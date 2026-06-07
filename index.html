@@ -4,14 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>POE2 Orb Arbitrage Calculator</title>
+  <meta name="description" content="Manual triangular arbitrage checker for Path of Exile 2 — Exalted, Chaos, Divine. Enter trade rates and see if the loop is profitable." />
+  <meta name="theme-color" content="#1a1612" />
+
+  <!-- icons / PWA -->
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+
+  <!-- Open Graph / share preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="POE2 Orb Arbitrage Calculator" />
+  <meta property="og:description" content="Manual triangular arbitrage checker for Path of Exile 2 — Exalted, Chaos, Divine." />
+  <meta property="og:url" content="https://zyser007.github.io/ex-c-dv-arbitrage/" />
+  <meta property="og:image" content="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyModValues.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="POE2 Orb Arbitrage Calculator" />
+  <meta name="twitter:description" content="Manual triangular arbitrage checker for Path of Exile 2." />
+  <meta name="twitter:image" content="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyModValues.png" />
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="app">
     <header class="app-header">
-      <h1>POE2 Orb Arbitrage Calculator</h1>
+      <div class="lang-switch">
+        <button type="button" class="lang-btn" data-lang="en">EN</button>
+        <button type="button" class="lang-btn" data-lang="th">TH</button>
+      </div>
+      <h1 data-i18n="title">POE2 Orb Arbitrage Calculator</h1>
       <p class="subtitle">
-        Manual triangular arbitrage checker for
+        <span data-i18n="subtitle">Manual triangular arbitrage checker for</span>
         <span class="route">Exalted → Chaos → Divine → Exalted</span>.
       </p>
     </header>
@@ -22,10 +45,10 @@
         <div class="field">
           <label for="startAmount">
             <img class="orb-icon" src="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyAddModToRare.png" alt="" onerror="this.onerror=null;this.src='sprites/exalted-orb.svg'">
-            Start Exalted
+            <span data-i18n="start_label">Start Exalted</span>
           </label>
           <input type="number" id="startAmount" step="any" min="0" inputmode="decimal" />
-          <small class="hint">How many Exalted Orb you start with</small>
+          <small class="hint" data-i18n="start_hint">How many Exalted Orb you start with</small>
         </div>
 
         <div class="field">
@@ -37,7 +60,7 @@
             Exalted Orb
           </label>
           <input type="number" id="exaltedPerChaos" step="any" min="0" inputmode="decimal" />
-          <small class="hint">Exalted you pay to buy 1 Chaos</small>
+          <small class="hint" data-i18n="rate1_hint">Exalted you pay to buy 1 Chaos</small>
         </div>
 
         <div class="field">
@@ -49,7 +72,7 @@
             Chaos Orb
           </label>
           <input type="number" id="chaosPerDivine" step="any" min="0" inputmode="decimal" />
-          <small class="hint">Chaos you must pay to buy 1 Divine</small>
+          <small class="hint" data-i18n="rate2_hint">Chaos you must pay to buy 1 Divine</small>
         </div>
 
         <div class="field">
@@ -61,54 +84,54 @@
             Exalted Orb
           </label>
           <input type="number" id="exaltedPerDivine" step="any" min="0" inputmode="decimal" />
-          <small class="hint">Exalted you get for selling 1 Divine</small>
+          <small class="hint" data-i18n="rate3_hint">Exalted you get for selling 1 Divine</small>
         </div>
 
         <details class="settings">
-          <summary>Gold Fees (per orb bought)</summary>
-          <p class="hint">Gold paid each trade = orbs bought × gold rate. Leave blank for no fee.</p>
+          <summary data-i18n="gold_summary">Gold Fees (per orb bought)</summary>
+          <p class="hint" data-i18n="gold_hint">Gold paid each trade = orbs bought × gold rate. Leave blank for no fee.</p>
           <div class="field">
             <label for="goldPerExalted">
               <img class="orb-icon" src="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyAddModToRare.png" alt="" onerror="this.onerror=null;this.src='sprites/exalted-orb.svg'">
-              Gold per Exalted
+              <span data-i18n="gold_exalted">Gold per Exalted</span>
             </label>
             <input type="number" id="goldPerExalted" step="any" min="0" inputmode="decimal" />
           </div>
           <div class="field">
             <label for="goldPerChaos">
               <img class="orb-icon" src="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png" alt="" onerror="this.onerror=null;this.src='sprites/chaos-orb.svg'">
-              Gold per Chaos
+              <span data-i18n="gold_chaos">Gold per Chaos</span>
             </label>
             <input type="number" id="goldPerChaos" step="any" min="0" inputmode="decimal" />
           </div>
           <div class="field">
             <label for="goldPerDivine">
               <img class="orb-icon" src="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyModValues.png" alt="" onerror="this.onerror=null;this.src='sprites/divine-orb.svg'">
-              Gold per Divine
+              <span data-i18n="gold_divine">Gold per Divine</span>
             </label>
             <input type="number" id="goldPerDivine" step="any" min="0" inputmode="decimal" />
           </div>
         </details>
 
         <details class="settings" open>
-          <summary>Optional Settings</summary>
+          <summary data-i18n="optional_settings">Optional Settings</summary>
           <div class="field">
-            <label for="safetyMarginPercent">Safety Margin %</label>
+            <label for="safetyMarginPercent" data-i18n="safety_label">Safety Margin %</label>
             <input type="number" id="safetyMarginPercent" step="any" min="0" inputmode="decimal" />
-            <small class="hint">Haircut applied to final amount for risk</small>
+            <small class="hint" data-i18n="safety_hint">Haircut applied to final amount for risk</small>
           </div>
           <div class="field">
-            <label for="minimumProfitPercent">Minimum Profit %</label>
+            <label for="minimumProfitPercent" data-i18n="minprofit_label">Minimum Profit %</label>
             <input type="number" id="minimumProfitPercent" step="any" min="0" inputmode="decimal" />
-            <small class="hint">Below this, profit is flagged as too thin</small>
+            <small class="hint" data-i18n="minprofit_hint">Below this, profit is flagged as too thin</small>
           </div>
         </details>
 
         <div class="actions">
-          <button id="calculateBtn" type="button">Calculate</button>
-          <button id="resetBtn" type="button" class="secondary">Reset</button>
+          <button id="calculateBtn" type="button" data-i18n="calc_btn">Calculate</button>
+          <button id="resetBtn" type="button" class="secondary" data-i18n="reset_btn">Reset</button>
         </div>
-        <button id="copyLinkBtn" type="button" class="link-btn">Copy shareable link</button>
+        <button id="copyLinkBtn" type="button" class="link-btn" data-i18n="copy_btn">Copy shareable link</button>
       </section>
 
       <!-- RESULT PANEL -->
@@ -119,7 +142,7 @@
       </section>
     </div>
 
-    <footer class="disclaimer">
+    <footer class="disclaimer" data-i18n="disclaimer">
       This calculator only checks mathematical opportunity from manually entered rates.
       Real trades can fail due to price movement, fake listings, low stock, whisper delay,
       and market spread.

@@ -58,6 +58,10 @@ is not folded into the start-currency profit, since it's a different orb).
 - **Shareable link** — "Copy shareable link" puts the current inputs into the
   URL so you can send an exact scenario to someone else. URL values take
   priority over saved ones when the page loads.
+- **Language** — EN / TH toggle in the header (saved, and carried in the share
+  link via `?lang=th`). Orb names stay in English.
+- **Installable / offline (PWA)** — a web manifest and service worker let you
+  install the app and use it offline; cached assets are versioned in `sw.js`.
 
 ## How it works
 

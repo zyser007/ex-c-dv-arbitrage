@@ -49,6 +49,138 @@ const STATUS = {
 };
 
 const STORAGE_KEY = "poe2-arb-state";
+const LANG_KEY = "poe2-arb-lang";
+let lang = "en";
+
+// Orb names are kept in English (item proper nouns) in both languages.
+const I18N = {
+  en: {
+    title: "POE2 Orb Arbitrage Calculator",
+    subtitle: "Manual triangular arbitrage checker for",
+    start_label: "Start Exalted",
+    start_hint: "How many Exalted Orb you start with",
+    rate1_hint: "Exalted you pay to buy 1 Chaos",
+    rate2_hint: "Chaos you must pay to buy 1 Divine",
+    rate3_hint: "Exalted you get for selling 1 Divine",
+    gold_summary: "Gold Fees (per orb bought)",
+    gold_hint: "Gold paid each trade = orbs bought × gold rate. Leave blank for no fee.",
+    gold_exalted: "Gold per Exalted",
+    gold_chaos: "Gold per Chaos",
+    gold_divine: "Gold per Divine",
+    optional_settings: "Optional Settings",
+    safety_label: "Safety Margin %",
+    safety_hint: "Haircut applied to final amount for risk",
+    minprofit_label: "Minimum Profit %",
+    minprofit_hint: "Below this, profit is flagged as too thin",
+    calc_btn: "Calculate",
+    reset_btn: "Reset",
+    copy_btn: "Copy shareable link",
+    copy_done: "Link copied!",
+    disclaimer:
+      "This calculator only checks mathematical opportunity from manually entered rates. Real trades can fail due to price movement, fake listings, low stock, whisper delay, and market spread.",
+    route_title: "Route",
+    best_route_title: "Best Route",
+    start_word: "Start:",
+    whole_orbs: "Whole orbs only — each step is rounded down.",
+    raw_profit: "Raw Profit",
+    after_safety: "After {p}% Safety",
+    total_gold_fee: "Total Gold Fee",
+    gold_unit: "gold",
+    leftover_orbs: "Leftover orbs",
+    in_profit: "in profit",
+    all_routes: "All Routes",
+    routes_note: "Profit % below is after the safety margin. Rotations of the same loop share a %.",
+    warning_thin: "Profit looks thin. Real trade spread, delay, or fake listings may remove the gain.",
+    invalid_input: "Invalid input",
+    status_profitable: "Profitable",
+    status_thin: "Potential but Too Thin",
+    status_not: "Not Profitable",
+    f_startAmount: "Start amount",
+    f_exaltedPerChaos: "1 Chaos = Exalted rate",
+    f_chaosPerDivine: "1 Divine = Chaos rate",
+    f_exaltedPerDivine: "1 Divine = Exalted rate",
+    f_safetyMarginPercent: "Safety Margin %",
+    f_minimumProfitPercent: "Minimum Profit %",
+    f_goldPerExalted: "Gold per Exalted",
+    f_goldPerChaos: "Gold per Chaos",
+    f_goldPerDivine: "Gold per Divine",
+    msg_required: "{label} is required.",
+    msg_number: "{label} must be a number.",
+    msg_gt0: "{label} must be greater than 0.",
+    msg_negative: "{label} cannot be negative.",
+  },
+  th: {
+    title: "เครื่องคำนวณ Arbitrage ออร์บ POE2",
+    subtitle: "ตัวเช็ก arbitrage สามเหลี่ยมแบบกรอกเอง สำหรับ",
+    start_label: "Exalted เริ่มต้น",
+    start_hint: "เริ่มต้นด้วย Exalted Orb กี่อัน",
+    rate1_hint: "Exalted ที่จ่ายเพื่อซื้อ Chaos 1 อัน",
+    rate2_hint: "Chaos ที่ต้องจ่ายเพื่อซื้อ Divine 1 อัน",
+    rate3_hint: "Exalted ที่ได้จากการขาย Divine 1 อัน",
+    gold_summary: "ค่าธรรมเนียม Gold (ต่อออร์บที่ซื้อ)",
+    gold_hint: "Gold ที่จ่ายต่อการเทรด = จำนวนออร์บที่ซื้อ × อัตรา gold · ปล่อยว่าง = ไม่คิดค่าธรรมเนียม",
+    gold_exalted: "Gold ต่อ Exalted",
+    gold_chaos: "Gold ต่อ Chaos",
+    gold_divine: "Gold ต่อ Divine",
+    optional_settings: "ตั้งค่าเพิ่มเติม",
+    safety_label: "เผื่อความปลอดภัย %",
+    safety_hint: "หักออกจากยอดสุดท้ายเพื่อกันความเสี่ยง",
+    minprofit_label: "กำไรขั้นต่ำ %",
+    minprofit_hint: "ต่ำกว่านี้จะถูกตีว่ากำไรบางเกินไป",
+    calc_btn: "คำนวณ",
+    reset_btn: "รีเซ็ต",
+    copy_btn: "คัดลอกลิงก์แชร์",
+    copy_done: "คัดลอกลิงก์แล้ว!",
+    disclaimer:
+      "เครื่องมือนี้ตรวจแค่โอกาสเชิงตัวเลขจากเรตที่กรอกเอง การเทรดจริงอาจล้มเหลวได้จากราคาที่ขยับ ประกาศหลอก ของไม่พอ ดีเลย์ตอน whisper และส่วนต่างราคาตลาด",
+    route_title: "เส้นทาง",
+    best_route_title: "เส้นทางที่ดีที่สุด",
+    start_word: "เริ่ม:",
+    whole_orbs: "ออร์บเป็นจำนวนเต็มเท่านั้น — ปัดลงทุกสเต็ป",
+    raw_profit: "กำไรดิบ",
+    after_safety: "หลังเผื่อ {p}%",
+    total_gold_fee: "ค่าธรรมเนียม Gold รวม",
+    gold_unit: "gold",
+    leftover_orbs: "ออร์บที่เหลือ",
+    in_profit: "รวมในกำไรแล้ว",
+    all_routes: "ทุกเส้นทาง",
+    routes_note: "% กำไรด้านล่างคิดหลังเผื่อความปลอดภัยแล้ว · การหมุนวนเส้นเดียวกันได้ % เท่ากัน",
+    warning_thin: "กำไรดูบางมาก ส่วนต่างราคา ดีเลย์ หรือประกาศหลอกอาจทำให้กำไรหายได้",
+    invalid_input: "ข้อมูลไม่ถูกต้อง",
+    status_profitable: "ทำกำไรได้",
+    status_thin: "พอมีโอกาส แต่บางเกินไป",
+    status_not: "ไม่คุ้ม",
+    f_startAmount: "จำนวนเริ่มต้น",
+    f_exaltedPerChaos: "เรต 1 Chaos = Exalted",
+    f_chaosPerDivine: "เรต 1 Divine = Chaos",
+    f_exaltedPerDivine: "เรต 1 Divine = Exalted",
+    f_safetyMarginPercent: "เผื่อความปลอดภัย %",
+    f_minimumProfitPercent: "กำไรขั้นต่ำ %",
+    f_goldPerExalted: "Gold ต่อ Exalted",
+    f_goldPerChaos: "Gold ต่อ Chaos",
+    f_goldPerDivine: "Gold ต่อ Divine",
+    msg_required: "ต้องกรอก {label}",
+    msg_number: "{label} ต้องเป็นตัวเลข",
+    msg_gt0: "{label} ต้องมากกว่า 0",
+    msg_negative: "{label} ห้ามติดลบ",
+  },
+};
+
+function t(key, params) {
+  let s = (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
+  if (params) {
+    Object.keys(params).forEach((k) => {
+      s = s.replace("{" + k + "}", params[k]);
+    });
+  }
+  return s;
+}
+
+function statusText(status) {
+  if (status === STATUS.PROFITABLE) return t("status_profitable");
+  if (status === STATUS.THIN) return t("status_thin");
+  return t("status_not");
+}
 
 // Short URL keys for shareable links.
 const PARAM_MAP = {
@@ -64,22 +196,22 @@ const PARAM_MAP = {
 };
 
 const REQUIRED_POSITIVE = [
-  { id: "startAmount", label: "Start amount" },
-  { id: "exaltedPerChaos", label: "1 Chaos = Exalted rate" },
-  { id: "chaosPerDivine", label: "1 Divine = Chaos rate" },
-  { id: "exaltedPerDivine", label: "1 Divine = Exalted rate" },
+  { id: "startAmount", labelKey: "f_startAmount" },
+  { id: "exaltedPerChaos", labelKey: "f_exaltedPerChaos" },
+  { id: "chaosPerDivine", labelKey: "f_chaosPerDivine" },
+  { id: "exaltedPerDivine", labelKey: "f_exaltedPerDivine" },
 ];
 
 const OPTIONAL_NONNEG = [
-  { id: "safetyMarginPercent", label: "Safety Margin %" },
-  { id: "minimumProfitPercent", label: "Minimum Profit %" },
+  { id: "safetyMarginPercent", labelKey: "f_safetyMarginPercent" },
+  { id: "minimumProfitPercent", labelKey: "f_minimumProfitPercent" },
 ];
 
 // Gold fee per orb bought; blank counts as 0 (no fee on that orb).
 const GOLD_FIELDS = [
-  { id: "goldPerExalted", label: "Gold per Exalted" },
-  { id: "goldPerChaos", label: "Gold per Chaos" },
-  { id: "goldPerDivine", label: "Gold per Divine" },
+  { id: "goldPerExalted", labelKey: "f_goldPerExalted" },
+  { id: "goldPerChaos", labelKey: "f_goldPerChaos" },
+  { id: "goldPerDivine", labelKey: "f_goldPerDivine" },
 ];
 
 const ALL_FIELDS = [...REQUIRED_POSITIVE, ...OPTIONAL_NONNEG, ...GOLD_FIELDS];
@@ -99,46 +231,49 @@ function validateInputs(raw) {
   const errors = [];
   const values = {};
 
-  REQUIRED_POSITIVE.forEach(({ id, label }) => {
+  REQUIRED_POSITIVE.forEach(({ id, labelKey }) => {
+    const label = t(labelKey);
     if (raw[id] === "") {
-      errors.push({ id, message: `${label} is required.` });
+      errors.push({ id, message: t("msg_required", { label }) });
       return;
     }
     const n = Number(raw[id]);
     if (!Number.isFinite(n)) {
-      errors.push({ id, message: `${label} must be a number.` });
+      errors.push({ id, message: t("msg_number", { label }) });
     } else if (n <= 0) {
-      errors.push({ id, message: `${label} must be greater than 0.` });
+      errors.push({ id, message: t("msg_gt0", { label }) });
     } else {
       values[id] = n;
     }
   });
 
-  OPTIONAL_NONNEG.forEach(({ id, label }) => {
+  OPTIONAL_NONNEG.forEach(({ id, labelKey }) => {
     if (raw[id] === "") {
       values[id] = DEFAULTS[id];
       return;
     }
+    const label = t(labelKey);
     const n = Number(raw[id]);
     if (!Number.isFinite(n)) {
-      errors.push({ id, message: `${label} must be a number.` });
+      errors.push({ id, message: t("msg_number", { label }) });
     } else if (n < 0) {
-      errors.push({ id, message: `${label} cannot be negative.` });
+      errors.push({ id, message: t("msg_negative", { label }) });
     } else {
       values[id] = n;
     }
   });
 
-  GOLD_FIELDS.forEach(({ id, label }) => {
+  GOLD_FIELDS.forEach(({ id, labelKey }) => {
     if (raw[id] === "") {
       values[id] = 0; // blank = no gold fee on this orb
       return;
     }
+    const label = t(labelKey);
     const n = Number(raw[id]);
     if (!Number.isFinite(n)) {
-      errors.push({ id, message: `${label} must be a number.` });
+      errors.push({ id, message: t("msg_number", { label }) });
     } else if (n < 0) {
-      errors.push({ id, message: `${label} cannot be negative.` });
+      errors.push({ id, message: t("msg_negative", { label }) });
     } else {
       values[id] = n;
     }
@@ -299,7 +434,7 @@ function renderValidation(errors) {
   const items = errors.map((e) => `<li>${e.message}</li>`).join("");
   document.getElementById("resultContent").innerHTML = `
     <div class="validation">
-      <strong>Invalid input</strong>
+      <strong>${t("invalid_input")}</strong>
       <ul>${items}</ul>
     </div>`;
 }
@@ -316,7 +451,7 @@ function renderResult(scan) {
     .map((s, i) => {
       const fee =
         s.goldFee > 0
-          ? ` <span class="step-fee">· ${formatNumber(Math.floor(s.goldFee), 0)} gold</span>`
+          ? ` <span class="step-fee">· ${formatNumber(Math.floor(s.goldFee), 0)} ${t("gold_unit")}</span>`
           : "";
       return `
       <li><span class="step-num">${i + 1}.</span>
@@ -339,7 +474,7 @@ function renderResult(scan) {
     allLeftovers.length > 0
       ? `
     <div class="leftover-card">
-      <span class="card-label">Leftover orbs</span>
+      <span class="card-label">${t("leftover_orbs")}</span>
       <div class="leftover-list">
         ${allLeftovers
           .map(
@@ -348,7 +483,7 @@ function renderResult(scan) {
             <img class="orb-icon" src="${CURRENCIES[l.currency].icon}" alt=""
               onerror="this.onerror=null;this.src='${CURRENCIES[l.currency].fallback}'">
             <span class="leftover-amt">${formatNumber(l.amount, 0)}</span> ${CURRENCIES[l.currency].short}
-            ${l.inProfit ? '<span class="tag">in profit</span>' : ""}
+            ${l.inProfit ? `<span class="tag">${t("in_profit")}</span>` : ""}
           </span>`
           )
           .join("")}
@@ -358,7 +493,7 @@ function renderResult(scan) {
 
   const warning =
     best.status === STATUS.THIN
-      ? `<p class="status-warning">Profit looks thin. Real trade spread, delay, or fake listings may remove the gain.</p>`
+      ? `<p class="status-warning">${t("warning_thin")}</p>`
       : "";
 
   let routesSection = "";
@@ -371,14 +506,14 @@ function renderResult(scan) {
           <div class="route-path">${routePathHtml(r.route)}</div>
           <div class="route-meta">
             <span class="route-pct ${sign}">${signed(r.adjustedProfitPercent, 2)}%</span>
-            <span class="pill ${statusClass(r.status)}">${r.status}</span>
+            <span class="pill ${statusClass(r.status)}">${statusText(r.status)}</span>
           </div>
         </div>`;
       })
       .join("");
     routesSection = `
-      <h2 class="routes-heading">All Routes</h2>
-      <p class="routes-note">Profit % below is after the safety margin. Rotations of the same loop share a %.</p>
+      <h2 class="routes-heading">${t("all_routes")}</h2>
+      <p class="routes-note">${t("routes_note")}</p>
       <div class="routes">${routeRows}</div>`;
   }
 
@@ -387,37 +522,37 @@ function renderResult(scan) {
       ? `
     <div class="gold-card">
       <div class="gold-row">
-        <span class="card-label">Total Gold Fee</span>
-        <span class="gold-value">${formatNumber(Math.floor(best.goldFee), 0)} gold</span>
+        <span class="card-label">${t("total_gold_fee")}</span>
+        <span class="gold-value">${formatNumber(Math.floor(best.goldFee), 0)} ${t("gold_unit")}</span>
       </div>
     </div>`
       : "";
 
   el.innerHTML = `
-    <h2>${scan.length > 1 ? "Best Route" : "Route"}</h2>
+    <h2>${scan.length > 1 ? t("best_route_title") : t("route_title")}</h2>
     <div class="best-route-path">${routePathHtml(best.route)}</div>
     <ol class="steps">
-      <li><span class="step-num">0.</span> Start:
+      <li><span class="step-num">0.</span> ${t("start_word")}
         <span class="amt">${formatNumber(best.startAmount)}</span> ${startShort}</li>
       ${stepLis}
     </ol>
-    <p class="routes-note">Whole orbs only — each step is rounded down.</p>
+    <p class="routes-note">${t("whole_orbs")}</p>
 
     <div class="profit-cards">
       <div class="card">
-        <span class="card-label">Raw Profit</span>
+        <span class="card-label">${t("raw_profit")}</span>
         <span class="card-value ${profitSign}">${signed(Math.floor(best.profit), 0)} ${startShort}</span>
         <span class="card-sub ${profitSign}">${signed(best.profitPercent, 2)}%</span>
       </div>
       <div class="card">
-        <span class="card-label">After ${formatNumber(best.safetyMarginPercent, 2)}% Safety</span>
+        <span class="card-label">${t("after_safety", { p: formatNumber(best.safetyMarginPercent, 2) })}</span>
         <span class="card-value ${adjSign}">${signed(Math.floor(best.adjustedProfit), 0)} ${startShort}</span>
         <span class="card-sub ${adjSign}">${signed(best.adjustedProfitPercent, 2)}%</span>
       </div>
     </div>
     ${goldSection}
 
-    <div class="status-banner ${statusClass(best.status)}">${best.status}</div>
+    <div class="status-banner ${statusClass(best.status)}">${statusText(best.status)}</div>
     ${warning}
     ${leftoverCard}
     ${routesSection}`;
@@ -440,6 +575,7 @@ function updateUrl(raw) {
   Object.keys(PARAM_MAP).forEach((key) => {
     if (raw[key] !== "") params.set(PARAM_MAP[key], raw[key]);
   });
+  if (lang && lang !== "en") params.set("lang", lang);
   const qs = params.toString();
   history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
 }
@@ -484,13 +620,50 @@ function copyLink() {
 function flashCopyButton() {
   const btn = document.getElementById("copyLinkBtn");
   if (!btn) return;
-  const original = btn.textContent;
-  btn.textContent = "Link copied!";
+  btn.textContent = t("copy_done");
   btn.classList.add("copied");
   setTimeout(() => {
-    btn.textContent = original;
+    btn.textContent = t("copy_btn");
     btn.classList.remove("copied");
   }, 1500);
+}
+
+/* ---------- language ---------- */
+
+function loadLang() {
+  let l = "en";
+  try {
+    l = localStorage.getItem(LANG_KEY) || l;
+  } catch (e) {
+    /* ignore */
+  }
+  if (typeof location !== "undefined") {
+    const p = new URLSearchParams(location.search);
+    if (p.has("lang")) l = p.get("lang");
+  }
+  lang = l === "th" ? "th" : "en";
+}
+
+function applyStaticI18n() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.documentElement.lang = lang;
+  document.title = t("title");
+  document.querySelectorAll(".lang-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.lang === lang);
+  });
+}
+
+function setLang(newLang) {
+  lang = newLang === "th" ? "th" : "en";
+  try {
+    localStorage.setItem(LANG_KEY, lang);
+  } catch (e) {
+    /* ignore */
+  }
+  applyStaticI18n();
+  run(); // re-render dynamic content + refresh URL (incl. lang)
 }
 
 /* ---------- orchestration ---------- */
@@ -529,15 +702,29 @@ function bindEvents() {
   const copyBtn = document.getElementById("copyLinkBtn");
   if (copyBtn) copyBtn.addEventListener("click", copyLink);
 
+  document.querySelectorAll(".lang-btn").forEach((b) => {
+    b.addEventListener("click", () => setLang(b.dataset.lang));
+  });
+
   ALL_FIELDS.forEach(({ id }) => {
     document.getElementById(id).addEventListener("input", run);
   });
 }
 
+function registerServiceWorker() {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+
 function init() {
+  loadLang();
+  applyStaticI18n();
   loadInitialValues();
   bindEvents();
   run();
+  registerServiceWorker();
 }
 
 if (typeof document !== "undefined") {

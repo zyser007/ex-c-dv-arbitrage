@@ -64,6 +64,32 @@
           <small class="hint">Exalted you get for selling 1 Divine</small>
         </div>
 
+        <details class="settings">
+          <summary>Gold Fees (per orb bought)</summary>
+          <p class="hint">Gold paid each trade = orbs bought × gold rate. Leave blank for no fee.</p>
+          <div class="field">
+            <label for="goldPerExalted">
+              <img class="orb-icon" src="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyAddModToRare.png" alt="" onerror="this.onerror=null;this.src='sprites/exalted-orb.svg'">
+              Gold per Exalted
+            </label>
+            <input type="number" id="goldPerExalted" step="any" min="0" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="goldPerChaos">
+              <img class="orb-icon" src="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png" alt="" onerror="this.onerror=null;this.src='sprites/chaos-orb.svg'">
+              Gold per Chaos
+            </label>
+            <input type="number" id="goldPerChaos" step="any" min="0" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="goldPerDivine">
+              <img class="orb-icon" src="https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyModValues.png" alt="" onerror="this.onerror=null;this.src='sprites/divine-orb.svg'">
+              Gold per Divine
+            </label>
+            <input type="number" id="goldPerDivine" step="any" min="0" inputmode="decimal" />
+          </div>
+        </details>
+
         <details class="settings" open>
           <summary>Optional Settings</summary>
           <div class="field">

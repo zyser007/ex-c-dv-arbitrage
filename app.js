@@ -9,6 +9,9 @@ const DEFAULTS = {
   exaltedPerDivine: 90,
   safetyMarginPercent: 1,
   minimumProfitPercent: 2,
+  goldPerExalted: 120,
+  goldPerChaos: 160,
+  goldPerDivine: 800,
 };
 
 // `icon` hot-links the official PoE CDN art (loaded by the visitor's browser);
@@ -55,6 +58,9 @@ const PARAM_MAP = {
   exaltedPerDivine: "ed",
   safetyMarginPercent: "sm",
   minimumProfitPercent: "mp",
+  goldPerExalted: "ge",
+  goldPerChaos: "gc",
+  goldPerDivine: "gd",
 };
 
 const REQUIRED_POSITIVE = [
@@ -69,12 +75,21 @@ const OPTIONAL_NONNEG = [
   { id: "minimumProfitPercent", label: "Minimum Profit %" },
 ];
 
+// Gold fee per orb bought; blank counts as 0 (no fee on that orb).
+const GOLD_FIELDS = [
+  { id: "goldPerExalted", label: "Gold per Exalted" },
+  { id: "goldPerChaos", label: "Gold per Chaos" },
+  { id: "goldPerDivine", label: "Gold per Divine" },
+];
+
+const ALL_FIELDS = [...REQUIRED_POSITIVE, ...OPTIONAL_NONNEG, ...GOLD_FIELDS];
+
 /* ---------- input handling ---------- */
 
 function readInputs() {
   const get = (id) => document.getElementById(id).value.trim();
   const raw = {};
-  [...REQUIRED_POSITIVE, ...OPTIONAL_NONNEG].forEach(({ id }) => {
+  ALL_FIELDS.forEach(({ id }) => {
     raw[id] = get(id);
   });
   return raw;
@@ -114,6 +129,21 @@ function validateInputs(raw) {
     }
   });
 
+  GOLD_FIELDS.forEach(({ id, label }) => {
+    if (raw[id] === "") {
+      values[id] = 0; // blank = no gold fee on this orb
+      return;
+    }
+    const n = Number(raw[id]);
+    if (!Number.isFinite(n)) {
+      errors.push({ id, message: `${label} must be a number.` });
+    } else if (n < 0) {
+      errors.push({ id, message: `${label} cannot be negative.` });
+    } else {
+      values[id] = n;
+    }
+  });
+
   return { ok: errors.length === 0, errors, values };
 }
 
@@ -137,19 +167,31 @@ function convert(amount, from, to, rates) {
 
 function evaluateRoute(route, input) {
   const { startAmount, safetyMarginPercent, minimumProfitPercent } = input;
+  const goldPerOrb = {
+    exalted: input.goldPerExalted || 0,
+    chaos: input.goldPerChaos || 0,
+    divine: input.goldPerDivine || 0,
+  };
   const path = [...route, route[0]];
 
   let amount = startAmount;
+  let goldFee = 0;
   const steps = [];
   for (let i = 0; i < 3; i++) {
     const from = path[i];
     const to = path[i + 1];
     const out = convert(amount, from, to, input);
-    steps.push({ from, to, inAmount: amount, outAmount: out });
+    // Gold fee is paid on the orb you buy (the step's output).
+    const stepGold = out * goldPerOrb[to];
+    goldFee += stepGold;
+    steps.push({ from, to, inAmount: amount, outAmount: out, goldFee: stepGold });
     amount = out;
   }
 
   const finalAmount = amount;
+  // Value the total gold fee in the start currency, when a gold price exists.
+  const goldPerStart = goldPerOrb[route[0]];
+  const goldFeeInStart = goldPerStart > 0 ? goldFee / goldPerStart : 0;
   const profit = finalAmount - startAmount;
   const profitPercent = (profit / startAmount) * 100;
 
@@ -171,6 +213,9 @@ function evaluateRoute(route, input) {
     adjustedProfit,
     adjustedProfitPercent,
     minimumProfitPercent,
+    goldFee,
+    goldFeeInStart,
+    netProfitAfterGold: profit - goldFeeInStart,
     status: getStatus(adjustedProfitPercent, minimumProfitPercent),
   };
 }
@@ -244,12 +289,16 @@ function renderResult(scan) {
   const startShort = CURRENCIES[best.startCurrency].short;
 
   const stepLis = best.steps
-    .map(
-      (s, i) => `
+    .map((s, i) => {
+      const fee =
+        s.goldFee > 0
+          ? ` <span class="step-fee">· ${formatNumber(s.goldFee, 0)} gold</span>`
+          : "";
+      return `
       <li><span class="step-num">${i + 1}.</span>
         ${formatNumber(s.inAmount)} ${CURRENCIES[s.from].short} →
-        <span class="amt">${formatNumber(s.outAmount)}</span> ${CURRENCIES[s.to].short}</li>`
-    )
+        <span class="amt">${formatNumber(s.outAmount)}</span> ${CURRENCIES[s.to].short}${fee}</li>`;
+    })
     .join("");
 
   const warning =
@@ -278,6 +327,22 @@ function renderResult(scan) {
       <div class="routes">${routeRows}</div>`;
   }
 
+  const netSign = best.netProfitAfterGold >= 0 ? "pos" : "neg";
+  const goldSection =
+    best.goldFee > 0
+      ? `
+    <div class="gold-card">
+      <div class="gold-row">
+        <span class="card-label">Total Gold Fee</span>
+        <span class="gold-value">${formatNumber(best.goldFee, 0)} gold</span>
+      </div>
+      <div class="gold-sub">
+        ≈ ${formatNumber(best.goldFeeInStart)} ${startShort}-equivalent · net after gold:
+        <span class="${netSign}">${signed(best.netProfitAfterGold)} ${startShort}</span>
+      </div>
+    </div>`
+      : "";
+
   el.innerHTML = `
     <h2>${scan.length > 1 ? "Best Route" : "Route"}</h2>
     <div class="best-route-path">${routePathHtml(best.route)}</div>
@@ -299,6 +364,7 @@ function renderResult(scan) {
         <span class="card-sub ${adjSign}">${signed(best.adjustedProfitPercent, 2)}%</span>
       </div>
     </div>
+    ${goldSection}
 
     <div class="status-banner ${statusClass(best.status)}">${best.status}</div>
     ${warning}
@@ -382,7 +448,7 @@ function run() {
   const { ok, errors, values } = validateInputs(raw);
 
   const errorIds = new Set(errors.map((e) => e.id));
-  [...REQUIRED_POSITIVE, ...OPTIONAL_NONNEG].forEach(({ id }) => {
+  ALL_FIELDS.forEach(({ id }) => {
     document.getElementById(id).classList.toggle("invalid", errorIds.has(id));
   });
 
@@ -411,7 +477,7 @@ function bindEvents() {
   const copyBtn = document.getElementById("copyLinkBtn");
   if (copyBtn) copyBtn.addEventListener("click", copyLink);
 
-  [...REQUIRED_POSITIVE, ...OPTIONAL_NONNEG].forEach(({ id }) => {
+  ALL_FIELDS.forEach(({ id }) => {
     document.getElementById(id).addEventListener("input", run);
   });
 }

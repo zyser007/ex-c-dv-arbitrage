@@ -30,6 +30,21 @@ Open `index.html` in any browser (desktop or mobile). Enter:
 
 The result recalculates instantly as you type.
 
+### Gold fees
+
+PoE2 currency-exchange trades cost **Gold**, paid on the orb you *buy*:
+
+```
+gold fee (per trade) = orbs bought × gold rate of that orb
+```
+
+Enter a gold rate per orb (e.g. Exalted 120, Chaos 160, Divine 800) and the
+app shows the gold fee per step, the total, that total as a start-currency
+equivalent (total ÷ gold-per-start-orb), and the net profit after gold.
+Leave a rate blank for no fee on that orb. Gold is a separate resource from
+orbs, so it does not change the orb-based profit/status — it is shown
+alongside so you can judge whether the loop is worth the gold.
+
 ### Convenience features
 
 - **Auto-save** — your rates are stored in `localStorage` and restored on the

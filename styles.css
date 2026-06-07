@@ -333,6 +333,41 @@ button.secondary {
   height: 16px;
 }
 
+/* per-step gold fee */
+.step-fee {
+  color: var(--gold);
+  font-size: 0.82rem;
+  opacity: 0.9;
+}
+
+/* gold fee summary card */
+.gold-card {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(201, 164, 92, 0.08);
+  border: 1px solid var(--gold);
+}
+
+.gold-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.gold-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+}
+
+.gold-sub {
+  margin-top: 4px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
 /* copy link button */
 .link-btn {
   width: 100%;

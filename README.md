@@ -43,6 +43,14 @@ app shows the gold fee per step plus the total. Leave a rate blank for no fee
 on that orb. Gold is a separate resource from orbs, so it does not change the
 orb-based profit/status — it is shown alongside as a reference cost.
 
+### Whole orbs & leftovers
+
+Orbs are integers, so every step rounds the orbs bought *down*. A buy step
+therefore leaves a remainder of the orb you spent (e.g. buying 11 Divine for
+160 of your 163 Chaos leaves 3 Chaos). Leftover in the **start currency** is
+added back to the profit; leftover in other orbs is reported separately (it
+is not folded into the start-currency profit, since it's a different orb).
+
 ### Convenience features
 
 - **Auto-save** — your rates are stored in `localStorage` and restored on the

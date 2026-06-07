@@ -165,19 +165,32 @@ function convert(amount, from, to, rates) {
   }
 }
 
+// How much of the input orb a step actually spends. "Buy" steps (divide)
+// can leave a remainder; "sell" steps (multiply) consume the whole input.
+function stepConsumed(from, to, outAmount, rates) {
+  switch (from + "_" + to) {
+    case "exalted_chaos": return Math.floor(outAmount * rates.exaltedPerChaos);
+    case "chaos_divine": return Math.floor(outAmount * rates.chaosPerDivine);
+    case "exalted_divine": return Math.floor(outAmount * rates.exaltedPerDivine);
+    default: return null; // sell step — all input is consumed
+  }
+}
+
 function evaluateRoute(route, input) {
   const { safetyMarginPercent, minimumProfitPercent } = input;
   // In-game orbs are whole numbers — round down at every step.
   const startAmount = Math.floor(input.startAmount);
+  const startCurrency = route[0];
   const goldPerOrb = {
     exalted: input.goldPerExalted || 0,
     chaos: input.goldPerChaos || 0,
     divine: input.goldPerDivine || 0,
   };
-  const path = [...route, route[0]];
+  const path = [...route, startCurrency];
 
   let amount = startAmount;
   let goldFee = 0;
+  const leftovers = {}; // currency -> whole orbs left unspent
   const steps = [];
   for (let i = 0; i < 3; i++) {
     const from = path[i];
@@ -186,14 +199,23 @@ function evaluateRoute(route, input) {
     // Gold fee is paid on the orb you buy (the step's output).
     const stepGold = out * goldPerOrb[to];
     goldFee += stepGold;
-    steps.push({ from, to, inAmount: amount, outAmount: out, goldFee: stepGold });
+
+    const consumed = stepConsumed(from, to, out, input);
+    const leftover = consumed === null ? 0 : amount - consumed;
+    if (leftover > 0) leftovers[from] = (leftovers[from] || 0) + leftover;
+
+    steps.push({ from, to, inAmount: amount, outAmount: out, goldFee: stepGold, leftover });
     amount = out;
   }
 
-  const finalAmount = amount;
-  // Value the total gold fee in the start currency, when a gold price exists.
-  const goldPerStart = goldPerOrb[route[0]];
-  const goldFeeInStart = goldPerStart > 0 ? goldFee / goldPerStart : 0;
+  // Leftover in the start currency is held in the same orb you end with,
+  // so it adds to the final total; other leftovers stay stranded.
+  const startLeftover = leftovers[startCurrency] || 0;
+  const otherLeftovers = Object.keys(leftovers)
+    .filter((c) => c !== startCurrency && leftovers[c] > 0)
+    .map((c) => ({ currency: c, amount: leftovers[c] }));
+
+  const finalAmount = amount + startLeftover;
   const profit = finalAmount - startAmount;
   const profitPercent = (profit / startAmount) * 100;
 
@@ -204,7 +226,7 @@ function evaluateRoute(route, input) {
 
   return {
     route,
-    startCurrency: route[0],
+    startCurrency,
     startAmount,
     steps,
     finalAmount,
@@ -216,8 +238,8 @@ function evaluateRoute(route, input) {
     adjustedProfitPercent,
     minimumProfitPercent,
     goldFee,
-    goldFeeInStart,
-    netProfitAfterGold: profit - goldFeeInStart,
+    startLeftover,
+    otherLeftovers,
     status: getStatus(adjustedProfitPercent, minimumProfitPercent),
   };
 }
@@ -292,6 +314,10 @@ function renderResult(scan) {
 
   const stepLis = best.steps
     .map((s, i) => {
+      const left =
+        s.leftover > 0
+          ? ` <span class="step-left">· ${formatNumber(s.leftover, 0)} ${CURRENCIES[s.from].short} left</span>`
+          : "";
       const fee =
         s.goldFee > 0
           ? ` <span class="step-fee">· ${formatNumber(Math.floor(s.goldFee), 0)} gold</span>`
@@ -299,9 +325,16 @@ function renderResult(scan) {
       return `
       <li><span class="step-num">${i + 1}.</span>
         ${formatNumber(s.inAmount)} ${CURRENCIES[s.from].short} →
-        <span class="amt">${formatNumber(s.outAmount)}</span> ${CURRENCIES[s.to].short}${fee}</li>`;
+        <span class="amt">${formatNumber(s.outAmount)}</span> ${CURRENCIES[s.to].short}${left}${fee}</li>`;
     })
     .join("");
+
+  const leftoverNote =
+    best.otherLeftovers.length > 0
+      ? `<p class="routes-note">Plus leftover kept in other orbs: ${best.otherLeftovers
+          .map((l) => `${formatNumber(l.amount, 0)} ${CURRENCIES[l.currency].short}`)
+          .join(", ")} (not included in the ${startShort} profit).</p>`
+      : "";
 
   const warning =
     best.status === STATUS.THIN
@@ -349,6 +382,7 @@ function renderResult(scan) {
       ${stepLis}
     </ol>
     <p class="routes-note">Whole orbs only — each step is rounded down.</p>
+    ${leftoverNote}
 
     <div class="profit-cards">
       <div class="card">

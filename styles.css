@@ -340,6 +340,12 @@ button.secondary {
   opacity: 0.9;
 }
 
+/* per-step leftover */
+.step-left {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
 /* gold fee summary card */
 .gold-card {
   margin-bottom: 16px;

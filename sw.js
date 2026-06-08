@@ -1,5 +1,5 @@
 // Bump this version whenever cached assets change, to refresh clients.
-const CACHE = "poe2-arb-v6";
+const CACHE = "poe2-arb-v7";
 
 const ASSETS = [
   "index.html",
